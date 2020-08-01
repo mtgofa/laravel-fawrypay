@@ -1,0 +1,39 @@
+{
+    "name": "mtgofa/laravel-fawrypay",
+    "description": "Laravel FawryPay online payment gateway package",
+    "keywords": [
+        "fawrypay",
+        "gateway",
+        "online",
+        "payment",
+        "php",
+        "laravel",
+        "egypt"
+    ],
+    "homepage": "https://github.com/MTGofa/laravel-fawrypay",
+    "authors": [
+        {
+            "name": "Mohamed Tarek Gofa",
+            "email": "gofa_25@hotmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "laravel/framework": "^6.0||^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MTGofa\\FawryPay\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MTGofa\\FawryPay\\FawryPayServiceProvider"
+            ],
+            "aliases": {
+                "FawryPay": "MTGofa\\FawryPay\\Facades\\FawryPay"
+            }
+        }
+    }
+}
