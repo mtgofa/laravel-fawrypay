@@ -1,6 +1,7 @@
 {
     "name": "mtgofa/laravel-fawrypay",
     "description": "Laravel FawryPay online payment gateway package",
+    "license": "MIT",
     "keywords": [
         "fawrypay",
         "gateway",
