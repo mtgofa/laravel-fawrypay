@@ -4,7 +4,6 @@ namespace MTGofa\FawryPay;
 
 class FawryPay
 {
-
     const FAWRY_URL         = 'https://www.atfawry.com/';
     const FAWRY_URL_TEST    = 'https://atfawry.fawrystaging.com/';
 
@@ -13,22 +12,21 @@ class FawryPay
     private $enviroment = 'TEST';
 
     function __construct($enviroment=Null){
-        if(!$enviroment) $enviroment = config('fawrypay.enviroment');
+        $enviroment = ($enviroment)?$enviroment:config('fawrypay.enviroment');
         $this->merchantCode = ($enviroment=='LIVE')?config('fawrypay.merchant_code'):config('fawrypay.merchant_code_test');
-        $this->secureKey = ($enviroment=='LIVE')?config('fawrypay.merchant_code'):config('fawrypay.merchant_code_test');
+        $this->secureKey = ($enviroment=='LIVE')?config('fawrypay.secure_key'):config('fawrypay.secure_key_test');
         $this->url = ($enviroment=='LIVE')?self::FAWRY_URL:self::FAWRY_URL_TEST;
-        $this->paymentExpiry = time() +  60 * 60 * config('fawrypay.expiry_in_hours'); //1 for hour //24 for day
     }
 
     public function generateCode($merchantRefNumber,$description=""){
         $fields = array(
             "language" => app()->getLocale()=='ar'?'ar-eg':'en-gb', //ar-eg //en-gb
             "merchantCode" => $this->merchantCode,
-            "customer" => $this->customer,
             "merchantRefNumber" => $merchantRefNumber,
+            "customer" => $this->customer,
             "order" => array(
                 'description' => $description,
-                'expiry' => '', //$this->paymentExpiry
+                'expiry' => config('fawrypay.expiry_in_hours'), //$this->paymentExpiry
                 'orderItems' => $this->items,
             ),
         );
@@ -60,13 +58,9 @@ class FawryPay
         $this->items[] = $item;
     }
 
-    public function changeExpiry($hours){
-        $this->paymentExpiry = time() +  60 * 60 * $hours;
-    }
-
-    public function payURL($data,$success_url='',$failure_url=''){
+    public function generatePayURL($merchantRefNumber,$description="",$success_url='',$failure_url=''){
         $fawry_url = $this->url.'ECommercePlugin/FawryPay.jsp?chargeRequest=';
-        $fawry_url .= json_encode($data);
+        $fawry_url .= json_encode($this->generateCode($merchantRefNumber,$description));
         $fawry_url .= "&successPageUrl=".$success_url;
         $fawry_url .= "&failerPageUrl=".$failure_url;
         return $fawry_url;
@@ -75,7 +69,7 @@ class FawryPay
     private function generateSignature($fields){
         $signature = $this->merchantCode;
         $signature .= $fields['merchantRefNumber'];
-        $signature .= $fields['customer']['customerProfileId'];
+        $signature .= $fields['customer']['customerProfileId']??'';
         foreach($fields['order']['orderItems'] as $item){
             $signature .= $item['productSKU'];
             $signature .= $item['quantity'];
@@ -84,13 +78,5 @@ class FawryPay
         $signature .= $fields['order']['expiry'];
         $signature .= $this->secureKey;
         return hash("sha256",$signature);
-    }
-
-    private function curlResponse($fields){
-        $fields['signature'] = $this->generateSignature($fields);
-        return $fields;
-        header('Content-Type: application/json');
-        echo json_encode($fields);
-        exit;
     }
 }
