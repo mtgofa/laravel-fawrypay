@@ -84,18 +84,18 @@ public function generate(){
 
     //optional if you have the customer data
     $fawryPay->customer([
-    	'productSKU' => '1',
-    	'name' => 'Mohamed Tarek',
-    	'email' => 'example@site.com',
-    	'mobile'=> '010******',
+    	'customerProfileId' => '1',
+    	'name'              => 'Mohamed Tarek',
+    	'email'             => 'example@site.com',
+    	'mobile'            => '010******',
     ]);
         
     //you can add this method info foreach if you have multible items
     $fawryPay->addItem([
-    	'productSKU' => '1', //item id
-    	'description' => 'Order 100001 Invoice', //item name
-    	'price' => '50.00', //item price
-    	'quantity'=> '1', //item quantity
+    	'productSKU'    => '1', //item id
+    	'description'   => 'Order 100001 Invoice', //item name
+    	'price'         => '50.00', //item price
+    	'quantity'      => '1', //item quantity
     ]);
 
     //generatePayURL('your order unique id','your order discription','success url','failed url')
@@ -133,5 +133,31 @@ public function callback(){
         dd($response);
     }
 }
+
+```
+
+
+Don't forget to excute the callback route from csrf token 
+
+
+```php
+<?php
+
+namespace App\Http\Middleware;
+
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+
+class VerifyCsrfToken extends Middleware
+{
+    /**
+     * The URIs that should be excluded from CSRF verification.
+     *
+     * @var array
+     */
+    protected $except = [
+        '/your_callbacl_url_here'
+    ];
+}
+
 
 ```
