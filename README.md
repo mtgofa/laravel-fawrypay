@@ -155,7 +155,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '/your_callbacl_url_here'
+        '/your_callback_url_here'
     ];
 }
 
